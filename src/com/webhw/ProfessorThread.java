@@ -6,19 +6,10 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 public class ProfessorThread implements Callable {
 
-    public AtomicBoolean getIsAvailable() {
-        return isAvailable;
-    }
-
-    public void setIsAvailable(AtomicBoolean isAvailable) {
-        this.isAvailable = isAvailable;
-    }
-
     public AtomicBoolean isAvailable = new AtomicBoolean(true);
 
     ProfessorThread(){
     }
-
 
     @Override
     public Object call() throws Exception {
@@ -34,8 +25,20 @@ public class ProfessorThread implements Callable {
     }
 
 
-    public int grade(){
-        return Util.getRandomNumber(5, 10);
+    public int gradeWork(){
+        return Util.getRandomNumber(5,10);
+    }
+
+    public String getThreadName(){
+        return "Profesor1";
+    }
+
+    public AtomicBoolean getIsAvailable() {
+        return isAvailable;
+    }
+
+    public void setIsAvailable(boolean isAvailable) {
+        this.isAvailable.set(isAvailable);
     }
 
 }

@@ -21,5 +21,11 @@ public class StaffCreationThread implements Runnable{
         } catch (InterruptedException | ExecutionException | TimeoutException e) {
             System.out.println("5 seconds up");
         }
+
+        System.out.println("Total grade sum = " + Shared.sum_of_all_grades +"\nTotal number of students graded = " + Shared.number_of_grades
+        + "\nGrade average = " + new Double(Shared.sum_of_all_grades) / Shared.number_of_grades);
+
+        System.exit(0);
+
     }
 }

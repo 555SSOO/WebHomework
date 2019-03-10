@@ -1,7 +1,6 @@
 package com.webhw;
 
 import java.util.concurrent.Callable;
-import java.util.concurrent.Future;
 
 public class StudentThread implements Callable {
 
@@ -19,32 +18,49 @@ public class StudentThread implements Callable {
 
     @Override
     public Object call() throws Exception {
-
-
-        synchronized (this) {
-            while (!assistant_thread.getIsAvailable().get()) {
-            }
-            assistant_thread.setIsAvailable(false);
-        }
-
-
+        int assistant_or_professor = schedule();
         int review_time = Util.getRandomNumber(500, 1000);
         waitForReview(review_time);
 
-        this.grade = assistant_thread.gradeWork();
 
-        System.out.println("Thread: " + Thread.currentThread().getName() + " Arrival: " +
-                +start_time + "ms Prof: " + assistant_thread.getThreadName() +
-                " TTC: " + review_time + "ms:domaci>:<vreme\n" +
-                "pocetka odbrane> ms Score: " + this.grade);
 
-        //Syn?
-        assistant_thread.setIsAvailable(true);
+        if(assistant_or_professor == 1) {
+            this.grade = assistant_thread.gradeWork();
+            System.out.println("Thread: " + Thread.currentThread().getName() + " Arrival: " +
+                    +start_time + "ms Prof: " + assistant_thread.getThreadName() +
+                    " TTC: " + review_time + "ms:domaci>:<vreme\n" +
+                    "pocetka odbrane> ms Score: " + this.grade);
+            assistant_thread.setIsAvailable(true);
+        }
+        else{
+            this.grade = professor_thread.gradeWork();
+            System.out.println("Thread: " + Thread.currentThread().getName() + " Arrival: " +
+                    +start_time + "ms Prof: " + professor_thread.getThreadName() +
+                    " TTC: " + review_time + "ms:domaci>:<vreme\n" +
+                    "pocetka odbrane> ms Score: " + this.grade);
+            professor_thread.setIsAvailable(true);
+        }
 
         inputGrade(this.grade);
 
         return null;
     }
+
+    // Returns 1 if we scheduled this student for the assistant, and 2 if we scheduled him for the professor
+    public synchronized int schedule(){
+        while (!assistant_thread.getIsAvailable().get() || !professor_thread.getIsAvailable().get()) {
+        }
+        if(assistant_thread.getIsAvailable().get()){
+            assistant_thread.setIsAvailable(false);
+            return 1;
+        }
+        else if(professor_thread.getIsAvailable().get()){
+            professor_thread.setIsAvailable(false);
+            return 2;
+        }
+        return 0;
+    }
+
 
     public void waitForReview(int time) throws InterruptedException {
         Thread.sleep(time);
