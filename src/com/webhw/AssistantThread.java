@@ -13,12 +13,10 @@ public class AssistantThread implements Callable {
     @Override
     public Object call() throws Exception {
 
-        Shared.assistant_ready = true;
+        Shared.assistant_ready.set(true);
 
         while(true) {
-        //System.out.println("AS THREAD");
         }
-        //return null;
     }
 
     public int gradeWork(){
@@ -26,7 +24,7 @@ public class AssistantThread implements Callable {
     }
 
     public String getThreadName(){
-        return "Asistent1";
+        return "A" + Thread.currentThread().getName();
     }
 
     public AtomicBoolean getIsAvailable() {
