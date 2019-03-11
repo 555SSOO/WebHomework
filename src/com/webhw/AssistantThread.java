@@ -7,31 +7,29 @@ public class AssistantThread implements Callable {
 
     private AtomicBoolean isAvailable = new AtomicBoolean(true);
 
-    AssistantThread(){
-    }
-
     @Override
-    public Object call() throws Exception {
-
+    public Object call() {
+        // Signal that the assistant is ready as soon as he is created
         Shared.assistant_ready.set(true);
-
-        while(true) {
+        // Keep this thread running
+        while (true) {
         }
     }
 
-    public int gradeWork(){
-        return Util.getRandomNumber(5,10);
+    // Grade the students work with a random number from 5 to 10
+    int gradeWork() {
+        return Util.getRandomNumber(5, 10);
     }
 
-    public String getThreadName(){
+    // Return the name of the running assistant thread
+    String getThreadName() {
         return "A" + Thread.currentThread().getName();
     }
 
-    public AtomicBoolean getIsAvailable() {
+    AtomicBoolean getIsAvailable() {
         return isAvailable;
     }
-
-    public void setIsAvailable(boolean isAvailable) {
+    void setIsAvailable(boolean isAvailable) {
         this.isAvailable.set(isAvailable);
     }
 
