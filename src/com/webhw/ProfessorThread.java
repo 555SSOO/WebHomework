@@ -24,7 +24,7 @@ public class ProfessorThread implements Callable {
 
     // Return the name of the professor thread
     String getThreadName(){
-        return "P" + Thread.currentThread().getName();
+        return Thread.currentThread().getName();
     }
 
     // Returns false Atomic Boolean if the professor has more then 2 students at a time

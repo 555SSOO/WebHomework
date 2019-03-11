@@ -23,6 +23,9 @@ public class StudentThread implements Callable {
     @Override
     public Object call() throws Exception {
 
+        // Get the time when the student arrives
+        long time_of_arrival = System.currentTimeMillis();
+
         // Only let one thread check and decrease availability at a time
         Semaphore semaphore = new Semaphore(1);
         semaphore.acquire();
@@ -31,7 +34,7 @@ public class StudentThread implements Callable {
         semaphore.release();
 
         // If the professor is available, we need to wait until there are 2 students in the queue
-        if(assistant_or_professor == 2){
+        if (assistant_or_professor == 2) {
             try {
                 barrier.await();
             } catch (InterruptedException | BrokenBarrierException e) {
@@ -39,31 +42,32 @@ public class StudentThread implements Callable {
             }
         }
 
+        // Get the time when the student starts the review
+        long time_of_review_start = start_time + (System.currentTimeMillis() - time_of_arrival);
+
         // Simulate the review time with a random timeout
         int review_time = Util.getRandomNumber(500, 1000);
         waitForReview(review_time);
 
         // If we are being graded by the assistant
-        if(assistant_or_professor == 1) {
+        if (assistant_or_professor == 1) {
             // Get the grade from the assistant thread
             this.grade = assistant_thread.gradeWork();
             // Print out the results
             System.out.println("Thread: " + Thread.currentThread().getName() + " Arrival: " +
                     +start_time + "ms Prof: " + assistant_thread.getThreadName() +
-                    " TTC: " + review_time + "ms:domaci>:<vreme\n" +
-                    "pocetka odbrane> ms Score: " + this.grade);
+                    " TTC: " + review_time + "ms:" + time_of_review_start + " ms Score: " + this.grade);
             // Signal that assistant is available again
             assistant_thread.setIsAvailable(true);
         }
         // If we are being graded by the professor
-        else if (assistant_or_professor == 2){
+        else if (assistant_or_professor == 2) {
             // Get the grade from the professor thread
             this.grade = professor_thread.gradeWork();
             // Print out the results
             System.out.println("Thread: " + Thread.currentThread().getName() + " Arrival: " +
                     +start_time + "ms Prof: " + professor_thread.getThreadName() +
-                    " TTC: " + review_time + "ms:domaci>:<vreme\n" +
-                    "pocetka odbrane> ms Score: " + this.grade);
+                    " TTC: " + review_time + "ms:" + time_of_review_start + "ms Score: " + this.grade);
             // Signal that professor has a spot open
             professor_thread.decrementBusyStatus();
         }
@@ -74,14 +78,13 @@ public class StudentThread implements Callable {
 
     // Returns 1 if we scheduled this student for the assistant, and 2 if we scheduled him for the professor
     // This is a critical section
-    private int schedule(){
+    private int schedule() {
         while (!assistant_thread.getIsAvailable().get() || !professor_thread.getIsAvailable().get()) {
         }
-        if(assistant_thread.getIsAvailable().get()){
+        if (assistant_thread.getIsAvailable().get()) {
             assistant_thread.setIsAvailable(false);
             return 1;
-        }
-        else if(professor_thread.getIsAvailable().get()){
+        } else if (professor_thread.getIsAvailable().get()) {
             professor_thread.incrementBusyStatus();
             return 2;
         }
@@ -100,5 +103,5 @@ public class StudentThread implements Callable {
         Shared.sum_of_all_grades.addAndGet(grade);
         Shared.number_of_grades.addAndGet(1);
     }
-    
+
 }

@@ -23,7 +23,7 @@ public class AssistantThread implements Callable {
 
     // Return the name of the running assistant thread
     String getThreadName() {
-        return "A" + Thread.currentThread().getName();
+        return Thread.currentThread().getName();
     }
 
     AtomicBoolean getIsAvailable() {
